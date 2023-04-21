@@ -15,7 +15,7 @@ import java.util.List;
 public class Pet {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     private String name;
 
@@ -30,11 +30,11 @@ public class Pet {
     @ManyToOne
     private Customer customer;
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -77,6 +77,7 @@ public class Pet {
     public void setPreferredFood(String preferredFood) {
         this.preferredFood = preferredFood;
     }
+
 
     public Customer getCustomer() {
         return customer;

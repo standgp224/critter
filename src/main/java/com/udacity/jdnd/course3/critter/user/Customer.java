@@ -15,9 +15,8 @@ import java.util.List;
 public class Customer {
 
     @Id
-    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     @Nationalized
     private String name;

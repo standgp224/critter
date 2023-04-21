@@ -1,11 +1,13 @@
 package com.udacity.jdnd.course3.critter.user;
 
+import com.udacity.jdnd.course3.critter.pet.Pet;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -24,14 +26,29 @@ public class UserController {
 
     @PostMapping("/customer")
     public CustomerDTO saveCustomer(@RequestBody CustomerDTO customerDTO){
-        customerService.createCustomer(convertCustomerDTOToCustomer(customerDTO));
-        throw new UnsupportedOperationException();
+        Customer customer = convertCustomerDTOToCustomer(customerDTO);
+        Customer customerAdded = customerService.createCustomer(customer);
+        return convertEntityToCustomerDTO(customerAdded);
     }
 
     @GetMapping("/customer")
     public List<CustomerDTO> getAllCustomers(){
-//       convertEntityToCustomerDTO(customerService.getAllCustomers());
-        throw new UnsupportedOperationException();
+        try {
+                List<Customer> allCustomers = customerService.getAllCustomers().getBody();
+                ArrayList<CustomerDTO> customerDTOS = new ArrayList<>();
+                if (allCustomers != null) {
+                    for (Customer customer : allCustomers
+                    ) {
+                        CustomerDTO customerDTO = convertEntityToCustomerDTO(customer);
+                        customerDTOS.add(customerDTO);
+                    }
+                    return customerDTOS;
+                } else return null;
+
+            }
+        catch (Exception e) {
+            throw new UnsupportedOperationException();
+        }
     }
 
     @GetMapping("/customer/pet/{petId}")
@@ -59,15 +76,31 @@ public class UserController {
         throw new UnsupportedOperationException();
     }
 
-    private static CustomerDTO convertEntityToCustomerDTO(Customer customer) {
-        CustomerDTO customerDTO = new CustomerDTO();
+    public static Customer convertCustomerDTOToCustomer(CustomerDTO customerDTO) {
+        Customer customer = new Customer();
         BeanUtils.copyProperties(customerDTO, customer);
-        return customerDTO;
+        List<Pet> pets = new ArrayList<>();
+        if (customerDTO.getPetIds() != null) {
+            for (Long petId : customerDTO.getPetIds()) {
+                Pet pet = new Pet();
+                pet.setId(petId);
+                pets.add(pet);
+            }
+        }
+        customer.setPets(pets);
+        return customer;
     }
 
-    private static Customer convertCustomerDTOToCustomer(CustomerDTO customerDTO) {
-        Customer customer = new Customer();
+    public static CustomerDTO convertEntityToCustomerDTO(Customer customer) {
+        CustomerDTO customerDTO = new CustomerDTO();
         BeanUtils.copyProperties(customer, customerDTO);
-        return customer;
+        List<Long> petIds = new ArrayList<>();
+        if (customer.getPets() != null) {
+            for (Pet pet : customer.getPets()) {
+                petIds.add(pet.getId());
+            }
+        }
+        customerDTO.setPetIds(petIds);
+        return customerDTO;
     }
 }

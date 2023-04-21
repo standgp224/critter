@@ -6,6 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author T.Q
@@ -17,13 +18,20 @@ public class CustomerService {
     @Autowired
     CustomerRepo customerRepo;
 
-    public ResponseEntity<Customer> createCustomer(Customer customer) {
-        Customer customerAdded = customerRepo.save(customer);
-        return new ResponseEntity<>(customerAdded, HttpStatus.CREATED);
+    public Customer createCustomer(Customer customer) {
+        return customerRepo.save(customer);
     }
 
     public ResponseEntity<List<Customer>> getAllCustomers() {
         List<Customer> customers = customerRepo.findAll();
         return new ResponseEntity<>(customers, HttpStatus.OK);
+    }
+
+    public ResponseEntity<Customer> findById(long id) {
+        Optional<Customer> optionalCustomer = customerRepo.findById(id);
+        if (optionalCustomer.isPresent()) {
+            Customer customer = optionalCustomer.get();
+            return new ResponseEntity<>(customer, HttpStatus.OK);
+        } else return null;
     }
 }
