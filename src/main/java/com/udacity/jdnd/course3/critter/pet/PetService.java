@@ -6,12 +6,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class PetService {
 
     @Autowired
@@ -21,6 +23,11 @@ public class PetService {
     CustomerRepo customerRepo;
 
     public Pet createPet(Pet pet) {
+        Optional<Customer> optionalCustomer = customerRepo.findById(pet.getOwnerId());
+        if (optionalCustomer.isPresent()) {
+            Customer customer = optionalCustomer.get();
+            pet.setCustomer(customer);
+        }
         return petRepo.save(pet);
     }
 
@@ -37,4 +44,6 @@ public class PetService {
         }
         else return null;
     }
+
+
 }

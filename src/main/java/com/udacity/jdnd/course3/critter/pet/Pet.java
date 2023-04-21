@@ -27,6 +27,9 @@ public class Pet {
 
     private String preferredFood;
 
+    @Transient
+    private long ownerId;
+
     @ManyToOne
     private Customer customer;
 
@@ -78,6 +81,13 @@ public class Pet {
         this.preferredFood = preferredFood;
     }
 
+    public long getOwnerId() {
+        return ownerId;
+    }
+
+    public void setOwnerId(long ownerId) {
+        this.ownerId = ownerId;
+    }
 
     public Customer getCustomer() {
         return customer;
