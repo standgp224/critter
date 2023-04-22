@@ -67,19 +67,28 @@ public class UserController {
         return convertEmployeeToEmployeeDTO(employeeService.createEmployee(employee));
     }
 
-    @PostMapping("/employee/{employeeId}")
+    @GetMapping("/employee/{employeeId}")
     public EmployeeDTO getEmployee(@PathVariable long employeeId) {
-        throw new UnsupportedOperationException();
+        return convertEmployeeToEmployeeDTO(employeeService.getEmployeeById(employeeId));
     }
 
     @PutMapping("/employee/{employeeId}")
     public void setAvailability(@RequestBody Set<DayOfWeek> daysAvailable, @PathVariable long employeeId) {
-        throw new UnsupportedOperationException();
+        Employee employee = employeeService.getEmployeeById(employeeId);
+        employeeService.updateEmployeeAvailability(employee, daysAvailable);
     }
 
     @GetMapping("/employee/availability")
     public List<EmployeeDTO> findEmployeesForService(@RequestBody EmployeeRequestDTO employeeDTO) {
-        throw new UnsupportedOperationException();
+        Employee employee = convertEmployeeRequestDTOToEmployee(employeeDTO);
+        List<Employee> employeeWithRequest = employeeService.getEmployeeWithRequest(employee);
+        ArrayList<EmployeeDTO> employeeDTOS = new ArrayList<>();
+        for (Employee emp: employeeWithRequest
+             ) {
+            EmployeeDTO toEmployeeDTO = convertEmployeeToEmployeeDTO(emp);
+            employeeDTOS.add(toEmployeeDTO);
+        }
+        return employeeDTOS;
     }
 
     public static Customer convertCustomerDTOToCustomer(CustomerDTO customerDTO) {
@@ -111,6 +120,12 @@ public class UserController {
     }
 
     public static Employee convertEmployeeDTOToEmployee(EmployeeDTO employeeDTO) {
+        Employee employee = new Employee();
+        BeanUtils.copyProperties(employeeDTO, employee);
+        return employee;
+    }
+
+    public static Employee convertEmployeeRequestDTOToEmployee(EmployeeRequestDTO employeeDTO) {
         Employee employee = new Employee();
         BeanUtils.copyProperties(employeeDTO, employee);
         return employee;
